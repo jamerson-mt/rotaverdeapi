@@ -6,6 +6,9 @@ namespace RotaVerdeAPI.Models
     {
         public int Id { get; set; }
         public string ?Nome { get; set; }
+        // propriedade para ano letivo
+        public int AnoLetivo { get; set; }
+        // professor responsavel
         public List<AlunoModel>? Alunos { get; set; } // Relacionamento com alunos
     }
 }
