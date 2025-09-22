@@ -15,6 +15,9 @@ namespace RotaVerdeAPI.Data
         // DbSet para TurmaModel
         public DbSet<TurmaModel> Turmas { get; set; }
 
+        // DbSet para DesempenhoModel
+        public DbSet<DesempenhoModel> Desempenhos { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
