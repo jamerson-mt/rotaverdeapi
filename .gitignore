@@ -1,0 +1,43 @@
+# Build results
+bin/
+obj/
+out/
+d
+# User-specific files
+*.user
+*.vspscc
+*.vssscc
+*.suo
+*.ntvs_analysis.dat
+*.ncrunch*
+*.map
+*.tsscache
+*.userprefs
+
+# Logs
+*.log
+
+# Visual Studio Code
+.vscode/
+
+# Rider
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Packages
+*.nupkg
+*.snupkg
+
+# Publish output
+wwwroot/
+
+# Database
+*.mdf
+*.ldf
+*.sqlite
+
+# Secrets
+appsettings.*.json
