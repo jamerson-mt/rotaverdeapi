@@ -7,6 +7,7 @@ using System.Security.Claims;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using System.Collections.Concurrent;
 
 namespace RotaVerdeAPI.Controllers.Auth
 {
@@ -16,6 +17,10 @@ namespace RotaVerdeAPI.Controllers.Auth
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+
+        // Armazena os números gerados e suas associações
+        private static readonly ConcurrentDictionary<int, string> GeneratedNumbers = new();
+        private static int CurrentNumber = 0;
 
         public AuthController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
@@ -119,5 +124,85 @@ namespace RotaVerdeAPI.Controllers.Auth
 
             return Ok(new { Message = $"Role '{request.Role}' atribuída ao usuário '{request.Username}' com sucesso!" });
         }
+
+        // POST: api/Auth/GenerateNumber
+        [HttpPost("generate")]
+        public IActionResult GenerateNumber()
+        {
+            if (CurrentNumber > 20)
+            {
+                return BadRequest(new { Message = "Limite de números gerados atingido." });
+            }
+
+            int newNumber = CurrentNumber++;
+            GeneratedNumbers.TryAdd(newNumber, string.Empty); // Número gerado sem associação inicial
+
+            return Ok(new { Number = newNumber });
+        }
+
+        [Authorize(Roles = "professor")]
+        // GET: api/Auth/GeneratedNumbers
+        [HttpGet("generated")]
+        public IActionResult GetGeneratedNumbers()
+        {
+            var numbers = GeneratedNumbers.Select(kvp => new
+            {
+                Number = kvp.Key,
+                AssignedTo = kvp.Value // Nome do usuário associado (ou null)
+            });
+
+            return Ok(numbers);
+        }
+
+        [Authorize(Roles = "professor")]
+        // POST: api/Auth/AssignNumber
+        [HttpPost("assign-number")]
+        public async Task<IActionResult> AssignNumber([FromBody] AssignNumberRequest request)
+        {
+            if (!GeneratedNumbers.ContainsKey(request.Number))
+            {
+                return BadRequest(new { Message = "Número inválido ou não gerado." });
+            }
+
+            var user = await _userManager.FindByNameAsync(request.Username);
+            if (user == null)
+            {
+                return NotFound(new { Message = "Usuário não encontrado." });
+            }
+
+            //faca validacao se usuario ja tem numero atribuido
+            if (GeneratedNumbers.Any(kvp => kvp.Value == request.Username))
+            {
+                return BadRequest(new { Message = "Usuário já possui um número atribuído." });
+            }
+            
+            GeneratedNumbers[request.Number] = request.Username; // Associa o número ao usuário
+
+            return Ok(new { Message = $"Número {request.Number} atribuído ao usuário '{request.Username}' com sucesso!" });
+        }
+
+        // POST: api/Auth/LoginByNumber
+        [HttpPost("login-by-number")]
+        public async Task<IActionResult> LoginByNumber([FromBody] LoginByNumberRequest request)
+        {
+            if (!GeneratedNumbers.TryGetValue(request.Number, out var username) || string.IsNullOrWhiteSpace(username))
+            {
+                return Unauthorized(new { Message = "Número inválido ou não associado a um usuário." });
+            }
+
+            var user = await _userManager.FindByNameAsync(username);
+            if (user == null)
+            {
+                return Unauthorized(new { Message = "Usuário não encontrado." });
+            }
+
+            await _signInManager.SignInAsync(user, false); // Autentica o usuário
+
+            return Ok(new { Message = "Login realizado com sucesso!", User = new { user.UserName, user.Email } });
+        }
     }
+
+    
+
+    
 }
