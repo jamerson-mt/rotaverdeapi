@@ -54,7 +54,7 @@ namespace RotaVerdeAPI.Controllers.Auth
             }
 
             var user = await _userManager.FindByNameAsync(request.Username);
-            if (user == null )
+            if (user == null)
             {
                 return Unauthorized(new { Message = "Usuário não encontrado!" });
             }
@@ -65,7 +65,18 @@ namespace RotaVerdeAPI.Controllers.Auth
                 return Unauthorized(new { Message = "Credenciais inválidas." });
             }
 
-            return Ok(new { Message = "Login realizado com sucesso!" });
+            var roles = await _userManager.GetRolesAsync(user); // Obtém as roles do usuário
+
+            return Ok(new 
+            { 
+                Message = "Login realizado com sucesso!", 
+                User = new 
+                {
+                    user.UserName,
+                    user.Email,
+                    Roles = roles // Adiciona as roles na resposta
+                }
+            });
         }
         
 
