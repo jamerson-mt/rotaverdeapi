@@ -73,7 +73,8 @@ namespace RotaVerdeAPI.Controllers.Auth
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
-            await _signInManager.SignOutAsync();
+            await _signInManager.SignOutAsync(); // Limpa o cookie de autenticação
+
             return Ok(new { Message = "Logout realizado com sucesso!" });
         }
 

@@ -7,11 +7,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Configure CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", policy =>
+    options.AddPolicy("AllowSpecificOrigin", policy =>
     {
-        policy.AllowAnyOrigin()
+        policy.WithOrigins("http://localhost:5173") // Substitua pelo domínio correto
               .AllowAnyMethod()
-              .AllowAnyHeader();
+              .AllowAnyHeader()
+              .AllowCredentials(); // Permite envio de cookies e credenciais
     });
 });
 
@@ -45,7 +46,7 @@ using (var scope = app.Services.CreateScope())
 
 app.UseHttpsRedirection();
 
-app.UseCors("AllowAll");
+app.UseCors("AllowSpecificOrigin"); // Use a política de CORS atualizada
 
 app.UseAuthentication();
 app.UseAuthorization();
