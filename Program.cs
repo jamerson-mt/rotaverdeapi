@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using RotaVerdeAPI.Data;
 using Microsoft.AspNetCore.Identity;
+using RotaVerdeAPI.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,7 +24,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Configurar o Identity
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 

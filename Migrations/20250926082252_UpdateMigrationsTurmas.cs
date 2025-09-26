@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace RotaVerdeAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialIdentitySetup : Migration
+    public partial class UpdateMigrationsTurmas : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -23,20 +23,6 @@ namespace RotaVerdeAPI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetRoles", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Turmas",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Nome = table.Column<string>(type: "TEXT", nullable: true),
-                    AnoLetivo = table.Column<int>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Turmas", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -61,10 +47,59 @@ namespace RotaVerdeAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AspNetUserClaims",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    UserId = table.Column<string>(type: "TEXT", nullable: false),
+                    ClaimType = table.Column<string>(type: "TEXT", nullable: true),
+                    ClaimValue = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserLogins",
+                columns: table => new
+                {
+                    LoginProvider = table.Column<string>(type: "TEXT", nullable: false),
+                    ProviderKey = table.Column<string>(type: "TEXT", nullable: false),
+                    ProviderDisplayName = table.Column<string>(type: "TEXT", nullable: true),
+                    UserId = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserRoles",
+                columns: table => new
+                {
+                    UserId = table.Column<string>(type: "TEXT", nullable: false),
+                    RoleId = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserRoles", x => new { x.UserId, x.RoleId });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserRoles_AspNetRoles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetUsers",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "TEXT", nullable: false),
+                    FullName = table.Column<string>(type: "TEXT", nullable: true),
+                    Address = table.Column<string>(type: "TEXT", nullable: true),
                     TurmaModelId = table.Column<int>(type: "INTEGER", nullable: true),
                     UserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
@@ -84,76 +119,6 @@ namespace RotaVerdeAPI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AspNetUsers_Turmas_TurmaModelId",
-                        column: x => x.TurmaModelId,
-                        principalTable: "Turmas",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUserClaims",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    UserId = table.Column<string>(type: "TEXT", nullable: false),
-                    ClaimType = table.Column<string>(type: "TEXT", nullable: true),
-                    ClaimValue = table.Column<string>(type: "TEXT", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AspNetUserClaims_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUserLogins",
-                columns: table => new
-                {
-                    LoginProvider = table.Column<string>(type: "TEXT", nullable: false),
-                    ProviderKey = table.Column<string>(type: "TEXT", nullable: false),
-                    ProviderDisplayName = table.Column<string>(type: "TEXT", nullable: true),
-                    UserId = table.Column<string>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
-                    table.ForeignKey(
-                        name: "FK_AspNetUserLogins_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUserRoles",
-                columns: table => new
-                {
-                    UserId = table.Column<string>(type: "TEXT", nullable: false),
-                    RoleId = table.Column<string>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUserRoles", x => new { x.UserId, x.RoleId });
-                    table.ForeignKey(
-                        name: "FK_AspNetUserRoles_AspNetRoles_RoleId",
-                        column: x => x.RoleId,
-                        principalTable: "AspNetRoles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_AspNetUserRoles_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -171,6 +136,30 @@ namespace RotaVerdeAPI.Migrations
                     table.ForeignKey(
                         name: "FK_AspNetUserTokens_AspNetUsers_UserId",
                         column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Turmas",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Nome = table.Column<string>(type: "TEXT", nullable: false),
+                    Descricao = table.Column<string>(type: "TEXT", nullable: true),
+                    AnoLetivo = table.Column<int>(type: "INTEGER", nullable: false),
+                    Turno = table.Column<int>(type: "INTEGER", nullable: false),
+                    DataCriacao = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    CriadorId = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Turmas", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Turmas_AspNetUsers_CriadorId",
+                        column: x => x.CriadorId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -217,11 +206,51 @@ namespace RotaVerdeAPI.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Turmas_CriadorId",
+                table: "Turmas",
+                column: "CriadorId");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_AspNetUserClaims_AspNetUsers_UserId",
+                table: "AspNetUserClaims",
+                column: "UserId",
+                principalTable: "AspNetUsers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_AspNetUserLogins_AspNetUsers_UserId",
+                table: "AspNetUserLogins",
+                column: "UserId",
+                principalTable: "AspNetUsers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_AspNetUserRoles_AspNetUsers_UserId",
+                table: "AspNetUserRoles",
+                column: "UserId",
+                principalTable: "AspNetUsers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_AspNetUsers_Turmas_TurmaModelId",
+                table: "AspNetUsers",
+                column: "TurmaModelId",
+                principalTable: "Turmas",
+                principalColumn: "Id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_Turmas_AspNetUsers_CriadorId",
+                table: "Turmas");
+
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 

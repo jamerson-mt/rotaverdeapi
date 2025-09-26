@@ -45,7 +45,14 @@ namespace RotaVerdeAPI.Controllers
         {
             _context.Turmas.Add(turma);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetById), new { id = turma.Id }, turma);
+
+            // Carregar propriedades relacionadas, se necessário
+            var turmaCriada = await _context.Turmas
+                .Include(t => t.Criador) // Inclua o criador, se aplicável
+                .Include(t => t.Usuarios) // Inclua os usuários, se aplicável
+                .FirstOrDefaultAsync(t => t.Id == turma.Id);
+
+            return CreatedAtAction(nameof(GetById), new { id = turma.Id }, turmaCriada);
         }
 
         // PUT: api/Turma/{id}

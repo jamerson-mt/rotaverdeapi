@@ -5,9 +5,17 @@ namespace RotaVerdeAPI.Models
 {
     public class TurmaModel
     {
-        public int Id { get; set; }
-        public string? Nome { get; set; }
-        public int AnoLetivo { get; set; }
-        public List<IdentityUser>? Usuarios { get; set; } // Relacionamento com usuários usando Identity
+        public int Id { get; set; } // Identificador único da turma
+        public required string Nome { get; set; } // Nome da turma
+        public string? Descricao { get; set; } // Descrição da turma
+        public required int AnoLetivo { get; set; } // Ano letivo da turma
+        public required Enum.Turno Turno { get; set; } // Turno (ex.: Matutino, Vespertino, Noturno)
+        public DateTime DataCriacao { get; set; } // Data de criação da turma
+        public required string CriadorId { get; set; } // ID do usuário que criou a turma (relacionado ao IdentityUser)
+        public ApplicationUser? Criador { get; set; } // Relacionamento com o usuário criador da turma
+
+        // Relacionamento com usuários (alunos e professores)
+        public ICollection<ApplicationUser> Usuarios { get; set; } = new List<ApplicationUser>();
+
     }
 }

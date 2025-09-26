@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using RotaVerdeAPI.Models;
 using RotaVerdeAPI.Models.Auth; // Atualizado para o namespace correto
 using System.Security.Claims;
 using System.Text.Json;
@@ -13,10 +14,10 @@ namespace RotaVerdeAPI.Controllers.Auth
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public AuthController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        public AuthController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -32,7 +33,7 @@ namespace RotaVerdeAPI.Controllers.Auth
                 return BadRequest(new { Message = "Todos os campos são obrigatórios." });
             }
 
-            var user = new IdentityUser { UserName = request.Username, Email = request.Email };
+            var user = new ApplicationUser { UserName = request.Username, Email = request.Email };
             var result = await _userManager.CreateAsync(user, request.Password);
 
             if (!result.Succeeded)

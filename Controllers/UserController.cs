@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Collections.Generic;
+using RotaVerdeAPI.Models;
 
 namespace RotaVerdeAPI.Controllers
 {
@@ -10,9 +8,9 @@ namespace RotaVerdeAPI.Controllers
     [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public UserController(UserManager<IdentityUser> userManager)
+        public UserController(UserManager<ApplicationUser> userManager)
         {
             _userManager = userManager;
         }
@@ -59,6 +57,14 @@ namespace RotaVerdeAPI.Controllers
             if (updates.ContainsKey("Email"))
             {
                 user.Email = updates["Email"];
+            }
+            if (updates.ContainsKey("FullName"))
+            {
+                user.FullName = updates["FullName"];
+            }
+            if (updates.ContainsKey("Address"))
+            {
+                user.Address = updates["Address"];
             }
 
             var result = await _userManager.UpdateAsync(user);
