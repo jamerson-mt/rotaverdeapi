@@ -6,16 +6,29 @@ using RotaVerdeAPI.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure CORS
-builder.Services.AddCors(options =>
+void ConfigureCors(IServiceCollection services)
 {
-    options.AddPolicy("AllowSpecificOrigin", policy =>
+    services.AddCors(options =>
     {
-        policy.WithOrigins("http://localhost:5173") // Substitua pelo domínio correto
-              .AllowAnyMethod()
-              .AllowAnyHeader()
-              .AllowCredentials(); // Permite envio de cookies e credenciais
+        options.AddPolicy("AllowSpecificOrigin", policy =>
+        {
+            policy.WithOrigins("http://localhost:5173")
+                  .AllowAnyMethod()
+                  .AllowAnyHeader()
+                  .AllowCredentials();
+        });
+
+        options.AddPolicy("AllowVercel", policy =>
+        {
+            policy.WithOrigins("https://rotaverde.vercel.app")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
+        });
     });
-});
+}
+
+ConfigureCors(builder.Services);
 
 builder.Services.AddControllers();
 
@@ -47,7 +60,7 @@ using (var scope = app.Services.CreateScope())
 
 app.UseHttpsRedirection();
 
-app.UseCors("AllowSpecificOrigin"); // Use a política de CORS atualizada
+app.UseCors("AllowVercel"); // Use a política de CORS atualizada
 
 app.UseAuthentication();
 app.UseAuthorization();
