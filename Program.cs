@@ -43,10 +43,16 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 
 var app = builder.Build();
 
-// Método para criar roles
+// Método para criar roles e aplicar migrations
 using (var scope = app.Services.CreateScope())
 {
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var services = scope.ServiceProvider;
+
+    // Aplicar as migrations automaticamente
+    var dbContext = services.GetRequiredService<ApplicationDbContext>();
+    dbContext.Database.Migrate();
+
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
     var roles = new[] { "aluno", "professor" };
 
     foreach (var role in roles)
