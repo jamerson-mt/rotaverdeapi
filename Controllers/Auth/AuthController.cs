@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
+using Microsoft.AspNetCore.Authentication;
 
 namespace RotaVerdeAPI.Controllers.Auth
 {
@@ -64,7 +65,7 @@ namespace RotaVerdeAPI.Controllers.Auth
                 return Unauthorized(new { Message = "Usuário não encontrado!" });
             }
 
-            var result = await _signInManager.PasswordSignInAsync(request.Username, request.Password, false, false);
+            var result = await _signInManager.PasswordSignInAsync(request.Username, request.Password, false, false); //
             if (!result.Succeeded)
             {
                 return Unauthorized(new { Message = "Credenciais inválidas." });
@@ -196,13 +197,31 @@ namespace RotaVerdeAPI.Controllers.Auth
                 return Unauthorized(new { Message = "Usuário não encontrado." });
             }
 
-            await _signInManager.SignInAsync(user, false); // Autentica o usuário
+            // Configura o cookie de autenticação
+            await _signInManager.SignInAsync(user, new AuthenticationProperties
+            {
+                IsPersistent = true // Define o cookie como persistente
+            });
 
             return Ok(new { Message = "Login realizado com sucesso!", User = new { user.UserName, user.Email } });
         }
+
+        // GET: api/Auth/ObserveNumber
+        [HttpGet("observe-number/{number}")]
+        public IActionResult ObserveNumber(int number)
+        {
+            if (!GeneratedNumbers.ContainsKey(number))
+            {
+                return BadRequest(new { Message = "Número inválido ou não gerado." });
+            }
+
+            var assignedTo = GeneratedNumbers[number];
+            if (string.IsNullOrWhiteSpace(assignedTo))
+            {
+                return Ok(new { Message = "Número ainda não foi associado a um aluno." , status = false });
+            }
+
+            return Ok(new { Message = $"Número {number} foi associado ao aluno '{assignedTo}'." , status = true});
+        }
     }
-
-    
-
-    
 }
