@@ -34,6 +34,12 @@ Thumbs.db
 # Publish output
 wwwroot/
 
+# Publish directory
+publish/
+
+# Temporary deployment files
+*.deploy
+
 # Database
 *.mdf
 *.ldf
