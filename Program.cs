@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using RotaVerdeAPI.Data;
 using Microsoft.AspNetCore.Identity;
 using RotaVerdeAPI.Models;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,25 +45,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 var app = builder.Build();
 
 // Método para criar roles e aplicar migrations
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-
-    // Aplicar as migrations automaticamente
-    var dbContext = services.GetRequiredService<ApplicationDbContext>();
-    dbContext.Database.Migrate();
-
-    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-    var roles = new[] { "aluno", "professor" };
-
-    foreach (var role in roles)
-    {
-        if (!await roleManager.RoleExistsAsync(role))
-        {
-            await roleManager.CreateAsync(new IdentityRole(role));
-        }
-    }
-}
+SeedData.Initialize(app.Services);
 
 app.UseHttpsRedirection();
 

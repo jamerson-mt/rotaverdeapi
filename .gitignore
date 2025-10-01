@@ -34,7 +34,7 @@ Thumbs.db
 # Publish output
 wwwroot/
 
-# Publish directory
+# Publish directory (ignored)
 publish/
 
 # Temporary deployment files
