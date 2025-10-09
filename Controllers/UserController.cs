@@ -49,7 +49,6 @@ namespace RotaVerdeAPI.Controllers
             {
                 return NotFound();
             }
-
             if (updates.ContainsKey("UserName"))
             {
                 user.UserName = updates["UserName"];

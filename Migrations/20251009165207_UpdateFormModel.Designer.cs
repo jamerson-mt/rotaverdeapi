@@ -11,8 +11,8 @@ using RotaVerdeAPI.Data;
 namespace RotaVerdeAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250926082252_UpdateMigrationsTurmas")]
-    partial class UpdateMigrationsTurmas
+    [Migration("20251009165207_UpdateFormModel")]
+    partial class UpdateFormModel
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -221,6 +221,47 @@ namespace RotaVerdeAPI.Migrations
                     b.HasIndex("TurmaModelId");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("RotaVerdeAPI.Models.AtividadeModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("AlunoId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Tempo")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("atividades");
+                });
+
+            modelBuilder.Entity("RotaVerdeAPI.Models.FormModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("forms");
                 });
 
             modelBuilder.Entity("RotaVerdeAPI.Models.TurmaModel", b =>

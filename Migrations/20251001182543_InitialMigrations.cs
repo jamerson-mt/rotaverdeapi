@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace RotaVerdeAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateMigrationsTurmas : Migration
+    public partial class InitialMigrations : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -23,6 +23,21 @@ namespace RotaVerdeAPI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetRoles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "atividades",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Nome = table.Column<string>(type: "TEXT", nullable: false),
+                    AlunoId = table.Column<string>(type: "TEXT", nullable: false),
+                    Tempo = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_atividades", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -265,6 +280,9 @@ namespace RotaVerdeAPI.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "atividades");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RotaVerdeAPI.Data;
 
@@ -10,9 +11,11 @@ using RotaVerdeAPI.Data;
 namespace RotaVerdeAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251001182543_InitialMigrations")]
+    partial class InitialMigrations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.9");
@@ -240,25 +243,6 @@ namespace RotaVerdeAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("atividades");
-                });
-
-            modelBuilder.Entity("RotaVerdeAPI.Models.FormModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Nome")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("forms");
                 });
 
             modelBuilder.Entity("RotaVerdeAPI.Models.TurmaModel", b =>

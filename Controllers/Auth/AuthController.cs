@@ -78,6 +78,7 @@ namespace RotaVerdeAPI.Controllers.Auth
                 Message = "Login realizado com sucesso!", 
                 User = new 
                 {
+                    user.Id,
                     user.UserName,
                     user.Email,
                     Roles = roles // Adiciona as roles na resposta
