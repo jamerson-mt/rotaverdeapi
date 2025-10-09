@@ -12,9 +12,9 @@ namespace RotaVerdeAPI.Data
             {
                 var services = scope.ServiceProvider;
 
-                // Aplicar as migrations automaticamente
+                // Garantir que o banco de dados seja criado
                 var dbContext = services.GetRequiredService<ApplicationDbContext>();
-                dbContext.Database.Migrate();
+                dbContext.Database.EnsureCreated();
 
                 var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
                 var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
