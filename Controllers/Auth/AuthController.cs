@@ -204,7 +204,7 @@ namespace RotaVerdeAPI.Controllers.Auth
                 IsPersistent = true // Define o cookie como persistente
             });
 
-            return Ok(new { Message = "Login realizado com sucesso!", User = new { user.UserName, user.Email } });
+            return Ok(new { Message = "Login realizado com sucesso!", User = new { user.Id,user.UserName, user.Email } });
         }
 
         // GET: api/Auth/ObserveNumber

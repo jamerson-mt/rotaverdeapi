@@ -43,10 +43,6 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
-builder.Services.AddDataProtection()
-    .PersistKeysToFileSystem(new DirectoryInfo(@"c:/Users/Admin/repo/LincolnProjeto/keys"))
-    .SetApplicationName("RotaVerdeAPI");
-
 var app = builder.Build();
 
 // Método para criar roles e aplicar migrations
@@ -54,7 +50,7 @@ SeedData.Initialize(app.Services);
 
 app.UseHttpsRedirection();
 
-app.UseCors("AllowVercel"); // Use a política de CORS atualizada
+app.UseCors("AllowSpecificOrigin"); // Use a política de CORS atualizada
 
 app.UseAuthentication();
 app.UseAuthorization();
