@@ -1,5 +1,5 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using RotaVerdeAPI.Models;
 
 namespace RotaVerdeAPI.Controllers
@@ -19,12 +19,14 @@ namespace RotaVerdeAPI.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            var users = _userManager.Users.Select(u => new 
-            {
-                u.Id,
-                u.UserName,
-                u.Email
-            }).ToList();
+            var users = _userManager
+                .Users.Select(u => new
+                {
+                    u.Id,
+                    u.UserName,
+                    u.Email,
+                })
+                .ToList();
             return Ok(users);
         }
 
@@ -42,7 +44,10 @@ namespace RotaVerdeAPI.Controllers
 
         // PUT: api/user/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(string id, [FromBody] Dictionary<string, string> updates)
+        public async Task<IActionResult> UpdateUser(
+            string id,
+            [FromBody] Dictionary<string, string> updates
+        )
         {
             var user = await _userManager.FindByIdAsync(id);
             if (user == null)

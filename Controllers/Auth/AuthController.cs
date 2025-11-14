@@ -1,14 +1,14 @@
+using System.Collections.Concurrent;
+using System.Security.Claims;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using RotaVerdeAPI.Models;
 using RotaVerdeAPI.Models.Auth; // Atualizado para o namespace correto
-using System.Security.Claims;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using System.Collections.Concurrent;
-using Microsoft.AspNetCore.Authentication;
 
 namespace RotaVerdeAPI.Controllers.Auth
 {
@@ -23,18 +23,24 @@ namespace RotaVerdeAPI.Controllers.Auth
         private static readonly ConcurrentDictionary<int, string> GeneratedNumbers = new();
         private static int CurrentNumber = 0;
 
-        public AuthController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public AuthController(
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager
+        )
         {
             _userManager = userManager;
             _signInManager = signInManager;
         }
 
-        [Authorize(Roles = "professor")]
         // POST: api/Auth/Register
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
-            if (string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
+            if (
+                string.IsNullOrWhiteSpace(request.Username)
+                || string.IsNullOrWhiteSpace(request.Email)
+                || string.IsNullOrWhiteSpace(request.Password)
+            )
             {
                 return BadRequest(new { Message = "Todos os campos são obrigatórios." });
             }
@@ -54,7 +60,10 @@ namespace RotaVerdeAPI.Controllers.Auth
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel request)
         {
-            if (string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Password))
+            if (
+                string.IsNullOrWhiteSpace(request.Username)
+                || string.IsNullOrWhiteSpace(request.Password)
+            )
             {
                 return BadRequest(new { Message = "Usuário e senha são obrigatórios." });
             }
@@ -65,7 +74,12 @@ namespace RotaVerdeAPI.Controllers.Auth
                 return Unauthorized(new { Message = "Usuário não encontrado!" });
             }
 
-            var result = await _signInManager.PasswordSignInAsync(request.Username, request.Password, false, false); //
+            var result = await _signInManager.PasswordSignInAsync(
+                request.Username,
+                request.Password,
+                false,
+                false
+            ); //
             if (!result.Succeeded)
             {
                 return Unauthorized(new { Message = "Credenciais inválidas." });
@@ -73,19 +87,20 @@ namespace RotaVerdeAPI.Controllers.Auth
 
             var roles = await _userManager.GetRolesAsync(user); // Obtém as roles do usuário
 
-            return Ok(new 
-            { 
-                Message = "Login realizado com sucesso!", 
-                User = new 
+            return Ok(
+                new
                 {
-                    user.Id,
-                    user.UserName,
-                    user.Email,
-                    Roles = roles // Adiciona as roles na resposta
+                    Message = "Login realizado com sucesso!",
+                    User = new
+                    {
+                        user.Id,
+                        user.UserName,
+                        user.Email,
+                        Roles = roles, // Adiciona as roles na resposta
+                    },
                 }
-            });
+            );
         }
-        
 
         [Authorize]
         // POST: api/Auth/Logout
@@ -97,12 +112,15 @@ namespace RotaVerdeAPI.Controllers.Auth
             return Ok(new { Message = "Logout realizado com sucesso!" });
         }
 
-        [Authorize(Roles = "professor")]
+       
         // POST: api/Auth/AssignRole
         [HttpPost("assign-role")]
         public async Task<IActionResult> AssignRole([FromBody] AssignRoleRequest request)
         {
-            if (string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Role))
+            if (
+                string.IsNullOrWhiteSpace(request.Username)
+                || string.IsNullOrWhiteSpace(request.Role)
+            )
             {
                 return BadRequest(new { Message = "Usuário e role são obrigatórios." });
             }
@@ -124,7 +142,12 @@ namespace RotaVerdeAPI.Controllers.Auth
                 return BadRequest(result.Errors);
             }
 
-            return Ok(new { Message = $"Role '{request.Role}' atribuída ao usuário '{request.Username}' com sucesso!" });
+            return Ok(
+                new
+                {
+                    Message = $"Role '{request.Role}' atribuída ao usuário '{request.Username}' com sucesso!",
+                }
+            );
         }
 
         // POST: api/Auth/GenerateNumber
@@ -142,7 +165,7 @@ namespace RotaVerdeAPI.Controllers.Auth
             return Ok(new { Number = newNumber });
         }
 
-        [Authorize(Roles = "professor")]
+       
         // GET: api/Auth/GeneratedNumbers
         [HttpGet("generated")]
         public IActionResult GetGeneratedNumbers()
@@ -150,13 +173,13 @@ namespace RotaVerdeAPI.Controllers.Auth
             var numbers = GeneratedNumbers.Select(kvp => new
             {
                 Number = kvp.Key,
-                AssignedTo = kvp.Value // Nome do usuário associado (ou null)
+                AssignedTo = kvp.Value, // Nome do usuário associado (ou null)
             });
 
             return Ok(numbers);
         }
 
-        [Authorize(Roles = "professor")]
+       
         // POST: api/Auth/AssignNumber
         [HttpPost("assign-number")]
         public async Task<IActionResult> AssignNumber([FromBody] AssignNumberRequest request)
@@ -177,19 +200,29 @@ namespace RotaVerdeAPI.Controllers.Auth
             {
                 return BadRequest(new { Message = "Usuário já possui um número atribuído." });
             }
-            
+
             GeneratedNumbers[request.Number] = request.Username; // Associa o número ao usuário
 
-            return Ok(new { Message = $"Número {request.Number} atribuído ao usuário '{request.Username}' com sucesso!" });
+            return Ok(
+                new
+                {
+                    Message = $"Número {request.Number} atribuído ao usuário '{request.Username}' com sucesso!",
+                }
+            );
         }
 
         // POST: api/Auth/LoginByNumber
         [HttpPost("login-by-number")]
         public async Task<IActionResult> LoginByNumber([FromBody] LoginByNumberRequest request)
         {
-            if (!GeneratedNumbers.TryGetValue(request.Number, out var username) || string.IsNullOrWhiteSpace(username))
+            if (
+                !GeneratedNumbers.TryGetValue(request.Number, out var username)
+                || string.IsNullOrWhiteSpace(username)
+            )
             {
-                return Unauthorized(new { Message = "Número inválido ou não associado a um usuário." });
+                return Unauthorized(
+                    new { Message = "Número inválido ou não associado a um usuário." }
+                );
             }
 
             var user = await _userManager.FindByNameAsync(username);
@@ -199,12 +232,26 @@ namespace RotaVerdeAPI.Controllers.Auth
             }
 
             // Configura o cookie de autenticação
-            await _signInManager.SignInAsync(user, new AuthenticationProperties
-            {
-                IsPersistent = true // Define o cookie como persistente
-            });
+            await _signInManager.SignInAsync(
+                user,
+                new AuthenticationProperties
+                {
+                    IsPersistent = true, // Define o cookie como persistente
+                }
+            );
 
-            return Ok(new { Message = "Login realizado com sucesso!", User = new { user.Id,user.UserName, user.Email } });
+            return Ok(
+                new
+                {
+                    Message = "Login realizado com sucesso!",
+                    User = new
+                    {
+                        user.Id,
+                        user.UserName,
+                        user.Email,
+                    },
+                }
+            );
         }
 
         // GET: api/Auth/ObserveNumber
@@ -219,10 +266,18 @@ namespace RotaVerdeAPI.Controllers.Auth
             var assignedTo = GeneratedNumbers[number];
             if (string.IsNullOrWhiteSpace(assignedTo))
             {
-                return Ok(new { Message = "Número ainda não foi associado a um aluno." , status = false });
+                return Ok(
+                    new { Message = "Número ainda não foi associado a um aluno.", status = false }
+                );
             }
 
-            return Ok(new { Message = $"Número {number} foi associado ao aluno '{assignedTo}'." , status = true});
+            return Ok(
+                new
+                {
+                    Message = $"Número {number} foi associado ao aluno '{assignedTo}'.",
+                    status = true,
+                }
+            );
         }
     }
 }

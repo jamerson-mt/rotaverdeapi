@@ -1,9 +1,9 @@
-using Microsoft.EntityFrameworkCore;
-using RotaVerdeAPI.Data;
-using Microsoft.AspNetCore.Identity;
-using RotaVerdeAPI.Models;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.DataProtection; // Adicione esta linha
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using RotaVerdeAPI.Data;
+using RotaVerdeAPI.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,21 +12,29 @@ void ConfigureCors(IServiceCollection services)
 {
     services.AddCors(options =>
     {
-        options.AddPolicy("AllowSpecificOrigin", policy =>
-        {
-            policy.WithOrigins("http://localhost:5173")
-                  .AllowAnyMethod()
-                  .AllowAnyHeader()
-                  .AllowCredentials();
-        });
+        options.AddPolicy(
+            "AllowSpecificOrigin",
+            policy =>
+            {
+                policy
+                    .WithOrigins("http://localhost:5173")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials();
+            }
+        );
 
-        options.AddPolicy("AllowVercel", policy =>
-        {
-            policy.WithOrigins("https://rotaverde.vercel.app")
-                  .AllowAnyHeader()
-                  .AllowAnyMethod()
-                  .AllowCredentials();
-        });
+        options.AddPolicy(
+            "AllowVercel",
+            policy =>
+            {
+                policy
+                    .WithOrigins("https://rotaverde.vercel.app")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
+            }
+        );
     });
 }
 
@@ -36,10 +44,12 @@ builder.Services.AddControllers();
 
 // Configurar o banco de dados (use SQLite como exemplo)
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))
+);
 
 // Configurar o Identity
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+builder
+    .Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
@@ -50,7 +60,7 @@ SeedData.Initialize(app.Services);
 
 app.UseHttpsRedirection();
 
-app.UseCors("AllowSpecificOrigin"); // Use a política de CORS atualizada
+app.UseCors("AllowVercel"); // Use a política de CORS atualizada
 
 app.UseAuthentication();
 app.UseAuthorization();
